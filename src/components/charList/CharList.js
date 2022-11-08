@@ -12,9 +12,15 @@ import './charList.scss';
 class CharList extends Component {
 
     state = {
+        // делаем массив charList изначально пустым
         charList: [],
         loading: true,
-        error: false
+        error: false,
+        newItemLoading: false,
+        // добавляем сюда тоже базовый отступ
+        offset: 210,
+        // создадим свойство окончания списка персонажей
+        charEnded: false
     }
 
     marvelService = new MarvelService();
@@ -23,16 +29,52 @@ class CharList extends Component {
         // // !!! специально вносим ошибку в код для использования предохранителя
         // this.foo.bar = 0;
         
-        this.marvelService.getAllCharacters()
+        // заменяем метод на созданный ниже, вызываем его когда компонент впервые отрендерился
+        this.onRequest();
+
+        // this.marvelService.getAllCharacters()
+        //     .then(this.onCharListLoaded)
+        //     .catch(this.onError)
+    }
+
+    // добавляем метод для загрузки нового списка персонажей
+    onRequest = (offset) => {
+        // вносим метод изменения загрузки
+        this.onCharListLoading();
+        // копируем методы из хука выше
+        this.marvelService.getAllCharacters(offset)
             .then(this.onCharListLoaded)
             .catch(this.onError)
     }
 
-    onCharListLoaded = (charList) => {
+    // добавляем метод изменения состояния загрузки новых персонажей
+    onCharListLoading = () => {
         this.setState({
-            charList,
-            loading: false
+            newItemLoading: true
         })
+    }
+
+    /* данный метод получает новые данные, со следующей логикой:
+    1. Из новых данный  формируется новое состояние, когда впервые запускается, пустой массив ни во что не разворачивается
+    2. Далее, когда данные будут вызываться повторно, они будут разворачиваться с предыдущими*/
+    onCharListLoaded = (newCharList) => {
+
+        // добавляем переменную, которая в случае выполнения условия будет менять значение
+        let ended = false;
+        if (newCharList.length < 9) {
+            ended = true;
+        }
+
+        this.setState(({offset, charList}) => ({
+            charList: [...charList, ...newCharList],
+            loading: false,
+            // переключаем загрузку персонажей в false когда список загрузился
+            newItemLoading: false,
+            // теперь, когда новый список персонажей загрузится, отступ нужно увеличить на 9
+            offset: offset + 9,
+            // меняем состояние окончания списка персонажей за счёт изменения переменной
+            charEnded: ended
+        }))
     }
 
     onError = () => {
@@ -47,7 +89,7 @@ class CharList extends Component {
     renderItems(arr) {
         const items = arr.map((item) => {
             let imgStyle = {'objectFit' : 'cover'};
-            if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+            if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' || 'http://i.annihil.us/u/prod/marvel/i/mg/f/60/4c002e0305708.gif') {
                 imgStyle = {'objectFit' : 'unset'};
         }
 
@@ -71,7 +113,7 @@ class CharList extends Component {
     }
 
     render() {
-        const {charList, loading, error} = this.state;
+        const {charList, loading, error, /*достаем также новые свойства*/offset, newItemLoading, charEnded} = this.state;
 
         const items = this.renderItems(charList);
 
@@ -84,7 +126,13 @@ class CharList extends Component {
                 {errorMessage}
                 {spinnner}
                 {content}
-                <button className="button button__main button__long">
+                <button 
+                    className="button button__main button__long"
+                    // дополняем кнопку новыми методами
+                    disabled={newItemLoading}
+                    onClick={() => this.onRequest(offset)}
+                    // добавляем стиль отображения кнопки в случае если персонажи кончились
+                    style={{'display' : charEnded ? 'none' : 'block'}}>
                     <div className="inner">load more</div>
                 </button>
              </div>

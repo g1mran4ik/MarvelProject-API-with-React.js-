@@ -4,6 +4,8 @@ class MarvelService {
 // для удобства части ссылки заворачиваем в переменные. Такой формат написания (с лодоша) переменных для понимания, что данные переменные нельзя изменять
     _apiBase = 'https://gateway.marvel.com:443/v1/public/';
     _apiKey = 'apikey=a37a7031ad14e3d953e039b3e362f5c7';
+    // оборачиваем изначальный отступ количества персонажей offset в переменную
+    _baseOffset = 210;
 
 // Используем метод getResource для получения данных с сервера в формате json
     getResource = async (url) => {
@@ -17,11 +19,12 @@ class MarvelService {
     }
 
 // создаем метод получения информации о всех персонажах(лимит апишки 20)
-    getAllCharacters = async () => {
+    // переносим в аргумент стандартное значение отступа для отображения персонажей offset)
+    getAllCharacters = async (offset = this._baseOffset) => {
         // return this.getResource(`${this._apiBase}characters?limit=9&offset=210&${this._apiKey}`);
         
         /* применяем аналогичные изменения кода для этого метода*/
-        const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=210&${this._apiKey}`);
+        const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=${offset}&${this._apiKey}`);
         return res.data.results.map(this._transformCharacter);
     }
 
