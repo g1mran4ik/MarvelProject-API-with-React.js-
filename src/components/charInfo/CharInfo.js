@@ -38,6 +38,13 @@ class CharInfo extends Component {
         }
     }
 
+    // используем хук componentDidCatch (принимает два аргумента)
+    // componentDidCatch(err, info) {
+    //     console.log(err, info);
+    //     this.setState({error: true});
+    // }
+    // ИТОГ - он не сработал, приложение также падает (из-за имитации ошибки в updateChar)
+
     // создаем метод обновления инфо о персонаже
     updateChar = () => {
         // деструктурируем пропсы (в нашем случае это id)
@@ -54,6 +61,9 @@ class CharInfo extends Component {
             .getCharacter(charId)
             .then(this.onCharLoaded)
             .catch(this.onError);
+
+        // // !!! специально вносим ошибку в код для использования предохранителя
+        // this.foo.bar = 0;
     }
 
 // копируем методы из RandomChar

@@ -5,6 +5,9 @@ import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
 
+// импортируем предохранитель
+import ErrorBoundary from '../errorBoundary/ErrorBoundary';
+
 import decoration from '../../resources/img/vision.png';
 
 class App extends Component {
@@ -25,11 +28,20 @@ class App extends Component {
             <div className="app">
                 <AppHeader/>
                 <main>
-                    <RandomChar/>
+                    {/* Оборачиваем в предохранитель все наши компоненты */}
+                    <ErrorBoundary>
+                        <RandomChar/>
+                    </ErrorBoundary>
                     <div className="char__content">
-                        {/* Используем поднятие состояния, для этого задаем свойство CharList и CharInfo */}
-                        <CharList onCharSelected={this.onCharSelected}/>
-                        <CharInfo charId={this.state.selectedChar}/>
+                        <ErrorBoundary>
+                            {/* Используем поднятие состояния, для этого задаем свойство CharList и CharInfo */}
+                            <CharList onCharSelected={this.onCharSelected}/>
+                        </ErrorBoundary>
+                        {/* Добавляем предохранитель для проблемного компонента */}
+                        <ErrorBoundary>
+                            <CharInfo charId={this.state.selectedChar}/>
+                        </ErrorBoundary>
+                        
                     </div>
                     <img className="bg-decoration" src={decoration} alt="vision"/>
                 </main>

@@ -45,6 +45,9 @@ class RandomChar extends Component {
     /* перемещаем updateChar в конце цикла монтирования componentDidMount,
     чтобы наш метод не срабатывал дважды (правильное решение)*/
     componentDidMount() {
+        // // !!! специально вносим ошибку в код для использования предохранителя
+        // this.foo.bar = 0;
+
         this.updateChar();
         // добавляем интрвал обновления случайных персонажей
         // this.timerId = setInterval(this.updateChar, 3000);
