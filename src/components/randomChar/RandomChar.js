@@ -142,7 +142,8 @@ class RandomChar extends Component {
                     <p className="randomchar__title">
                         Or choose another one
                     </p>
-                    <button className="button button__main">
+                    {/* добавляем кнопке повторный запуск обновления случайного персонажа */}
+                    <button onClick={this.updateChar} className="button button__main">
                         <div className="inner">try it</div>
                     </button>
                     <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
@@ -157,10 +158,15 @@ const View = ({char}) => {
     /* теперь аргументы перемещены в простой рендерящий компонент,
     в нём нет никакой логики, он просто получает объект с данными и отображает фрагмент верстки*/
     const {name, description, thumbnail, homepage, wiki} = char;
+    // добавляем переменную стиля картинки для изображения при отсутствии картинки персонажа (чтоб отображалось корректно по размеру)
+    let imgStyle = {'objectFit' : 'cover'};
+    if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+        imgStyle = {'objectFit' : 'contain'};
+    }
 
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} alt="Random character" className="randomchar__img"/>
+            <img src={thumbnail} alt="Random character" className="randomchar__img" /*добавляем ранее созданный параметр стиля*/style={imgStyle}/>
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
