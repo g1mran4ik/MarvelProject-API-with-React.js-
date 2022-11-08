@@ -40,6 +40,9 @@ class MarvelService {
 // создаем метод трансформирования объекта, полученного с сервера, в том формате, который нас интересует
     _transformCharacter = (char) => {
         return {
+            // добавляем id персонажа
+            id: char.id,
+            //
             name: char.name,
             // Домашнее задание - если описания нет, вывести текст, а если описание слишком больше, обрезать его и дополнить троеточием
             description: char.description ? `${char.description.slice(0,210)}...` : 'There is no description for this character',

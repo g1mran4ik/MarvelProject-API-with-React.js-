@@ -63,6 +63,12 @@ class RandomChar extends Component {
         })
     }
     
+    // добавление спиннера при нажатии на кнопку
+    onCharLoading = () => {
+        this.setState({
+            loading : true
+        })
+    }
     // добавляем метод фиксации ошибки
     onError = () => {
         this.setState({
@@ -78,6 +84,10 @@ class RandomChar extends Component {
 
         // создаем переменную id, которая теперь формируется РАНДОМНО!
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
+        
+        // добавляем метод загрузки (спиннер)
+        this.onCharLoading();
+
         // применяем к экземпляру marvelService метод получения персонажа
         this.marvelService
             /* Проверяем метод getAllCharacters, выводя объекты
