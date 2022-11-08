@@ -1,5 +1,9 @@
 // импортируем компонент реакта (для класса), а также компоненты загрузки, ошибки и загрузки персонажей
 import { Component } from 'react';
+
+// импортируем компонент PropTypes
+import PropTypes from 'prop-types';
+
 import Spinner from '../spinnner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelService';
@@ -138,6 +142,11 @@ class CharList extends Component {
              </div>
         )
     }
+}
+
+CharList.propTypes = {
+    // устанавливаем проверку, что onCharSelected обязательно функция
+    onCharSelected: PropTypes.func.isRequired
 }
 
 export default CharList;

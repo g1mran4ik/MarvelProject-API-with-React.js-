@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/app/App';
-import MarvelService from './services/MarvelService'; // импортируем созданный класс
+// import MarvelService from './services/MarvelService'; // импортируем созданный класс
 import './style/style.scss';
 
 ReactDOM.render(

@@ -1,6 +1,9 @@
 // импортируем компонент реакта
 import { Component } from 'react';
 
+// импортируем компонент PropTypes из соответствующей библиотеки (урок 6)
+import PropTypes from 'prop-types';
+
 // импортируем необходимые для работы компоненты
 import Spinner from '../spinnner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -8,7 +11,7 @@ import Skeleton from '../skeleton/Skeleton';
 import MarvelService from '../../services/MarvelService';
 
 import './charInfo.scss';
-import thor from '../../resources/img/thor.jpeg';
+// import thor from '../../resources/img/thor.jpeg';
 
 // опять работаем через классы
 class CharInfo extends Component {
@@ -186,6 +189,12 @@ const View = ({char}) => {
                 </ul>
         </>
     )
+}
+
+CharInfo.propTypes = {
+    // задаем проверку, при которой charId обязательно должен быть числом
+    charId: PropTypes.number
+    // если мы поставим, например, string, PropType выдаст нам ошибку, т.к. charId это число
 }
 
 export default CharInfo;
