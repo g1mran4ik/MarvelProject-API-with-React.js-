@@ -1,6 +1,10 @@
 // импортируем компонент из реакта
 import { Component } from 'react';
-
+// импортируем спиннер для отображения загрузки
+import Spinner from '../spinnner/Spinner';
+// импортируем компонент сообщения об ошибке 
+import ErrorMessage from '../errorMessage/ErrorMessage';
+// импортируем сервис загрузки данных (урок 2)
 import MarvelService from '../../services/MarvelService';
 
 import './randomChar.scss';
@@ -26,15 +30,30 @@ class RandomChar extends Component {
         // wiki: null
 
         // упрощаем запись, создавая ТОЛЬКО пустой объект char
-        char: {}
+        char: {},
+        // добавляем состояние загрузки
+        loading: true,
+        // добавляем поле ОШИБКИ (изначально её нет)
+        error: false
     }
 
     marvelService = new MarvelService(); // данный метод забираем из index.js и немного преобразовываем
     
     onCharLoaded = (char) => {
-        this.setState({char})
+        this.setState({char, 
+            // теперь, как только у нас будут загружены данные, загрузка переключится в false, и это уберет спиннер
+            loading: false
+        })
     }
     
+    // добавляем метод фиксации ошибки
+    onError = () => {
+        this.setState({
+            loading: false,
+            error: true
+        })
+    }
+
     // создаем метод получения персонажа (с помощью стрелочной функции)
     updateChar = () => {
         // пока устанавливаем конкретный id (хардкод, офк никакого рандома)
@@ -64,6 +83,8 @@ class RandomChar extends Component {
                     // wiki: res.data.results[0].urls[1].url
             // })
             .then(this.onCharLoaded) // итоговая версия с использованием char
+            // метод, который будет вызывать метод onError в случае ошибки
+            .catch(this.onError)
     }
 
     render() {
@@ -71,26 +92,31 @@ class RandomChar extends Component {
         // const {name, description, thumbnail, homepage, wiki} = this.state;
         
         // адаптируем деструктуризацию под наличие char
-        const {char: {name, description, thumbnail, homepage, wiki}} = this.state;
+        const {char, 
+            /*добавляем состояние загрузки*/loading,
+            /*добавляем состояние ошибки*/ error} = this.state;
+        
+        // добавляем переменные в которых будут компоненты ошибки и спиннера
+        const errorMessage = error ? <ErrorMessage/> : null;
+        const spinnner = loading ? <Spinner/> : null;
+
+        // добавление переменной контента, который отображается тогда, когда НЕТ ошибок и НЕТ загрузки
+        const content = !(loading || error) ? <View char={char}/> : null;
+
+        // вставляем условие, при котором в состоянии загрузки будет отображаться спиннер
+        // UPD. Теперь это условие не нужно, т.к. мы используем условный рендеринг
+        // if (loading) {
+        //     return <Spinner/>
+        // }
+
         return (
             <div className="randomchar">
-                <div className="randomchar__block">
-                    <img src={thumbnail} alt="Random character" className="randomchar__img"/>
-                    <div className="randomchar__info">
-                        <p className="randomchar__name">{name}</p>
-                        <p className="randomchar__descr">
-                            {description}
-                        </p>
-                        <div className="randomchar__btns">
-                            <a href={homepage} className="button button__main">
-                                <div className="inner">homepage</div>
-                            </a>
-                            <a href={wiki} className="button button__secondary">
-                                <div className="inner">Wiki</div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                {/* Здесь теперь мы рендерим либо спиннер, либо компонент - УСЛОВНЫЙ РЕНДЕРИНГ
+                {loading ? <Spinner/> : <View char={char}/>} */}
+                {/* Вставляем добавленные переменные */}
+                {errorMessage}
+                {spinnner}
+                {content}
                 <div className="randomchar__static">
                     <p className="randomchar__title">
                         Random character for today!<br/>
@@ -107,6 +133,33 @@ class RandomChar extends Component {
             </div>
         )
     }
+}
+
+// создадим компонент, который будет отображать кусочек нашей верстки
+const View = ({char}) => {
+    /* теперь аргументы перемещены в простой рендерящий компонент,
+    в нём нет никакой логики, он просто получает объект с данными и отображает фрагмент верстки*/
+    const {name, description, thumbnail, homepage, wiki} = char;
+
+    return (
+        <div className="randomchar__block">
+            <img src={thumbnail} alt="Random character" className="randomchar__img"/>
+            <div className="randomchar__info">
+                <p className="randomchar__name">{name}</p>
+                <p className="randomchar__descr">
+                    {description}
+                </p>
+                <div className="randomchar__btns">
+                    <a href={homepage} className="button button__main">
+                        <div className="inner">homepage</div>
+                    </a>
+                    <a href={wiki} className="button button__secondary">
+                        <div className="inner">Wiki</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 export default RandomChar;
