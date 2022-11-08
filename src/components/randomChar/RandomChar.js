@@ -16,10 +16,11 @@ class RandomChar extends Component {
     // добавляем конструктор, чтобы вызвать написанный метод.
     // ВАЖНО! При таком варианте браузер ругается, т.к. наш базовый стейт сформирован позже
     // на данном этапе оставляем так, но такой вариант написания использовать не рекомендуется
-    constructor(props) {
-        super(props);
-        this.updateChar();
-    }
+    // UPD. Конструктор теперь НЕ НУЖЕН, т.к. мы использовали ХУКИ ЖИЗНЕННОГО ЦИКЛА
+    // constructor(props) {
+    //     super(props);
+        // this.updateChar();
+    // }
 
     // задаем базовые состояния. Все будут нулевыми
     state = {
@@ -39,6 +40,22 @@ class RandomChar extends Component {
 
     marvelService = new MarvelService(); // данный метод забираем из index.js и немного преобразовываем
     
+
+// ХУКИ ЖИЗНЕННОГО ЦИКЛА
+    /* перемещаем updateChar в конце цикла монтирования componentDidMount,
+    чтобы наш метод не срабатывал дважды (правильное решение)*/
+    componentDidMount() {
+        this.updateChar();
+        // добавляем интрвал обновления случайных персонажей
+        // this.timerId = setInterval(this.updateChar, 3000);
+    }
+
+    /* останавливаем интервал, когда жизненный цикл приложения ПОЛНОСТЬЮ ЗАВЕРШАЕТСЯ(компонент удаляется)*/
+    componentWillUnmount() {
+        clearInterval(this.timerId);
+    }
+// 
+
     onCharLoaded = (char) => {
         this.setState({char, 
             // теперь, как только у нас будут загружены данные, загрузка переключится в false, и это уберет спиннер
