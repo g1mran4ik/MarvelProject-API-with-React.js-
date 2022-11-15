@@ -69,12 +69,14 @@ import AppHeader from "../appHeader/AppHeader";
 const App = () => {
 
     return (
+        // оборачиваем нашу верстку в компонент <Router>
         <Router>
             <div className="app">
                 <AppHeader/>
                 <main>
+                    {/* Используем switch для возможности переключения между страницами */}
                     <Switch>   
-                        <Route exact path="/">
+                        <Route exact /*данный синтаксис устанавливает ТОЧНОЕ совпадение с указанным путем*/ path="/">
                             <MainPage/> 
                         </Route>                     
                         <Route exact path="/comics">
