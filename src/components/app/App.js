@@ -1,16 +1,28 @@
-import { /*Component - теперь НЕ НУЖЕН*/ useState/*добавляем хук*/ } from "react";
+// этот импорт переехал в файл главной странички
+// import { /*Component - теперь НЕ НУЖЕН*/ useState/*добавляем хук*/ } from "react";
+
+// добавляем в приложение маршрутизатор
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
+// чтобы не указывать конкретный файл в папке, можно использовать такой импорт(для этого создавался файл index.js внутри папки pages)
+import { MainPage, ComicsPage } from '../pages';
 
 import AppHeader from "../appHeader/AppHeader";
-import RandomChar from "../randomChar/RandomChar";
-import CharList from "../charList/CharList";
-import CharInfo from "../charInfo/CharInfo";
-import ComicsList from "../comicsList/ComicsList";
-import AppBanner from "../appBanner/AppBanner";
+
+// все импорты переехали в файлы страничек (главной и комиксов по принадлежности)
+// import RandomChar from "../randomChar/RandomChar";
+// import CharList from "../charList/CharList";
+// import CharInfo from "../charInfo/CharInfo";
+
+// 
+// import ComicsList from "../comicsList/ComicsList";
+// import AppBanner from "../appBanner/AppBanner";
+
 
 // импортируем предохранитель
-import ErrorBoundary from '../errorBoundary/ErrorBoundary';
+// import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 
-import decoration from '../../resources/img/vision.png';
+// import decoration from '../../resources/img/vision.png';
 
 // class App extends Component {
 //     // задаем базовое состояние для выбранного персонажа
@@ -53,69 +65,26 @@ import decoration from '../../resources/img/vision.png';
 // }
 
 // реализуем компонент через функцию вместо классов
+
 const App = () => {
 
-    // включаем хук useState
-    const [selectedChar, setChar] = useState(null);
-
-    // state теперь нам не нужен, т.к. мы используем хук
-    // state = {
-    //     selectedChar : null
-    // }
-
-    const onCharSelected = (id) => {
-        setChar(id);
-    }
-    // метод также изменяется 
-    // onCharSelected = (id) => {
-    //     this.setState({
-    //         selectedChar: id
-    //     })
-    // }
-
-    // метод render() теперь не нужен, он удален
     return (
-        <div className="app">
-            <AppHeader/>
-            <main>
-                {/* <ErrorBoundary>
-                    <RandomChar/>
-                </ErrorBoundary> */}
-                {/* <div className="char__content">
-                    <ErrorBoundary> */}
-                        {/* убираем this. */}
-                    {/* <CharList onCharSelected={onCharSelected}/>
-                    </ErrorBoundary>
-                    <ErrorBoundary> */}
-                        {/* убираем this.state. */}
-                        {/* <CharInfo charId={selectedChar}/>
-                    </ErrorBoundary>
-                </div>
-                <img className="bg-decoration" src={decoration} alt="vision"/> */}
-                <AppBanner/>
-                <ComicsList/>
-            </main>
-        </div>
+        <Router>
+            <div className="app">
+                <AppHeader/>
+                <main>
+                    <Switch>   
+                        <Route exact path="/">
+                            <MainPage/> 
+                        </Route>                     
+                        <Route exact path="/comics">
+                            <ComicsPage/>   
+                        </Route>
+                    </Switch>
+                </main>
+            </div>
+        </Router>
     )
 }
 
 export default App;
-
-
-// const App = () => {
-//     return (
-//         <div className="app">
-//             <AppHeader/>
-//             <main>
-//                 <RandomChar/>
-//                 <div className="char__content">
-//                     <CharList/>
-//                     <CharInfo/>
-//                 </div>
-//                 <img className="bg-decoration" src={decoration} alt="vision"/>
-//             </main>
-//         </div>
-//     )
-// }
-
-// export default App;
