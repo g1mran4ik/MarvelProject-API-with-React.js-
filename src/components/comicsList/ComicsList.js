@@ -1,5 +1,6 @@
 // импортируем хуки стейт и эффект, а также созданный хук, компоненты спиннера и ошибки
 import { useState, useEffect} from 'react';
+import {Link} from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinnner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -44,13 +45,13 @@ const ComicsList = () => {
     function renderItems (arr) {
         const items = arr.map((item, i) => {
             return (
-                <li className="comics__item" key={i}>  
-                {/* eslint-disable-next-line */}
-                    <a href="#">
+                <li className="comics__item" key={i}> 
+                    {/*создаем динамичную ссылку на конкретный комиск через идентификатор */}
+                    <Link to={`/comics/${item.id}`}>
                         <img src={item.thumbnail} alt={item.title} className="comics__item-img"/>
                         <div className="comics__item-name">{item.title}</div>
                         <div className="comics__item-price">{item.price}</div>
-                    </a>
+                    </Link>
                 </li>
             )
         })
