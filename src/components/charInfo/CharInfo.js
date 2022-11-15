@@ -8,7 +8,8 @@ import PropTypes from 'prop-types';
 import Spinner from '../spinnner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
-import MarvelService from '../../services/MarvelService';
+
+import useMarvelService from '../../services/MarvelService';
 
 import './charInfo.scss';
 // import thor from '../../resources/img/thor.jpeg';
@@ -118,8 +119,8 @@ const CharInfo = (props) => {
 
     // задаем состояния хуком useState
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+    // const [loading, setLoading] = useState(false);
+    // const [error, setError] = useState(false);
 
     // не нужно в функциональном компоненте
     // state = {
@@ -129,7 +130,10 @@ const CharInfo = (props) => {
     // }
 
     // дополняем экземпляр переменной
-    const marvelService = new MarvelService();
+    // const marvelService = new MarvelService();
+    // 
+    const {loading, error, getCharacter, clearError} = useMarvelService();
+
 
     // используем хук useEffect
     useEffect(() => {
@@ -153,6 +157,10 @@ const CharInfo = (props) => {
 
     // добавляем const
     const updateChar = () => {
+
+        // 
+        clearError();
+
         // убираем this. перед пропсами
         const {charId} = props;
 
@@ -160,29 +168,32 @@ const CharInfo = (props) => {
             return;
         }
         
-        // убираем this.
-        onCharLoading();
+        // удаляем метод после введения кастомного хука
+        // // убираем this.
+        // onCharLoading();
 
-        marvelService
-            .getCharacter(charId)
+        // marvelService - теперь не нужно
+        getCharacter(charId)
             .then(onCharLoaded)
-            .catch(onError);
+            // .catch(onError); - теперь не нужно
     }
 
 // добавляем const, убираем this.
     const onCharLoaded = (char) => {
-        setLoading(false); 
+        // setLoading(false); - теперь не нужно
         setChar(char);
     }
     
-    const onCharLoading = () => {
-        setLoading(true);
-    }
+    // методы теперь не нужны (используем кастомный хук)
+    // const onCharLoading = () => {
+    //     setLoading(true);
+    // }
 
-    const onError = () => {
-        setError(true);
-        setLoading(false);
-    }
+    // const onError = () => {
+    //     setError(true);
+    //     setLoading(false);
+    // }
+
     // переменные доставать теперь не нужно
     // const {char, loading, error} = this.state;
         

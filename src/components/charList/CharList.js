@@ -6,7 +6,8 @@ import PropTypes from 'prop-types';
 
 import Spinner from '../spinnner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
-import MarvelService from '../../services/MarvelService';
+// 
+import useMarvelService from '../../services/MarvelService';
 
 import './charList.scss';
 
@@ -189,8 +190,9 @@ const CharList = (props) => {
 
     // устанавливаем состояния через хук useState
     const [charList, setCharList] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    // 
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState(false);
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
@@ -206,11 +208,14 @@ const CharList = (props) => {
     // }
 
     // задаем экземпляр marvelService через переменную (используя const)
-    const marvelService = new MarvelService();
+    // const marvelService = new MarvelService();
+    // после создания кастомного хука заменяем new ... на useMarvelService
+    const {loading, error, getAllCharacters} = useMarvelService();
 
     // добавляем хук useEffect
     useEffect(() => {
-        onRequest();
+        // дополняем onRequest аргументами(добавление кастомного хука)
+        onRequest(offset, true);
     }, [])
     // p.s. не смотря на то, что хук прописан раньше объявленной стрелочной функции, он запускается только ПОСЛЕ рендеринга
 
@@ -220,26 +225,41 @@ const CharList = (props) => {
     // }
 
     // дополняем функцию объявлением const
-    const onRequest = (offset) => {
+    // 
+    const onRequest = (offset, /* дополняем аргументом для правильной работы приложения с кастомным хуком*/initial) => {
+
+        // после введения кастомного хука меняем логику отображения спиннера, используя тернарное выражение
+        // добавление такого аргумента позволит нам менять положение статуса загрузки в зависимости от ситуации
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
+        
+        // вытаскиваем смену состояния из удаленной функции onCharListLoading
+        // setNewItemLoading(true);
+        // onCharListLoading после создания кастомного хука НЕ НУЖЕН
         // this. убираем
-        onCharListLoading();
+        // onCharListLoading();
+        
         // аналогично убираем this.
-        marvelService.getAllCharacters(offset)
+        // marvelService.getAllCharacters(offset)
+        //     .then(onCharListLoaded)
+        //     .catch(onError)
+        // UPD. правки после введения кастомного хука
+        getAllCharacters(offset)
             .then(onCharListLoaded)
-            .catch(onError)
+
     }
 
     // добавляем const
-    const onCharListLoading = () => {
+    // onCharListLoading НЕ НУЖНО после введения кастомного хука
+    // const onCharListLoading = () => {
 
-        // для изменения состояния используем хук
-        setNewItemLoading(true);
+    //     // для изменения состояния используем хук
+    //     setNewItemLoading(true);
 
-        // прежняя версия уже не нужна
-        // this.setState({
-        //     newItemLoading: true
-        // })
-    }
+    //     // прежняя версия уже не нужна
+    //     // this.setState({
+    //     //     newItemLoading: true
+    //     // })
+    // }
 
     // добавляем const
     const onCharListLoaded = (newCharList) => {
@@ -250,7 +270,7 @@ const CharList = (props) => {
 
         // устанавливаем состояния за счет хуков
         setCharList(charList => [...charList, ...newCharList])
-        setLoading(loading => false);
+        // setLoading(loading => false); - убираем из-за кастомного хука
         setNewItemLoading(newItemLoading => false);
         setOffset(offset => offset + 9);
         setCharEnded(charEnded => ended);     
@@ -265,19 +285,19 @@ const CharList = (props) => {
         // }))
     }
 
-    // 
-    const onError = () => {
+    // ТЕПЕРЬ НЕ НУЖНО, т.к. это все есть в кастомном хуке
+    // const onError = () => {
 
-        // задаем новое состояние хуком
-        setError(true);
-        setLoading(loading => false);
+    //     // задаем новое состояние хуком
+    //     setError(true);
+    //     setLoading(loading => false);
 
-        // не нужно теперь
-        // this.setState({
-        //     error: true,
-        //     loading: false
-        // })
-    }
+    //     // не нужно теперь
+    //     // this.setState({
+    //     //     error: true,
+    //     //     loading: false
+    //     // })
+    // }
 
     // добавляем хук useRef
     const itemRefs = useRef([]);
@@ -347,14 +367,18 @@ const CharList = (props) => {
         const items = renderItems(charList);
 
         const errorMessage = error ? <ErrorMessage/> : null;
-        const spinnner = loading ? <Spinner/> : null;
-        const content = !(loading || error) ? items : null;
+        // дополняем спиннер условием !newItemLoading(добавление кастомного хука)
+        const spinnner = loading && !newItemLoading ? <Spinner/> : null;
+        // const spinnner = loading ? <Spinner/> : null; - после добавления кастомного хука не актуально
+        // const content = !(loading || error) ? items : null;
 
     return (
         <div className="char__list">
             {errorMessage}
             {spinnner}
-            {content}
+            {/*  */}
+            {items}
+            {/* {content} */}
             <button 
                 className="button button__main button__long"
                 // дополняем кнопку новыми методами

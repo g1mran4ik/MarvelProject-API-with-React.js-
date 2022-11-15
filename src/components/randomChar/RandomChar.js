@@ -5,7 +5,8 @@ import Spinner from '../spinnner/Spinner';
 // импортируем компонент сообщения об ошибке 
 import ErrorMessage from '../errorMessage/ErrorMessage';
 // импортируем сервис загрузки данных (урок 2)
-import MarvelService from '../../services/MarvelService';
+// 
+import useMarvelService from '../../services/MarvelService';
 
 import './randomChar.scss';
 // import thor from '../../resources/img/thor.jpeg'; - не нужно, т.к. мы убрали ссылку на тора
@@ -170,8 +171,9 @@ const RandomChar = () => {
 
     // задаем состояния через хуки
     const [char, setChar] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    // 
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState(false);
 
     // теперь не нужно
     // state = {
@@ -181,7 +183,10 @@ const RandomChar = () => {
     // }
 
     // добавляем const
-    const marvelService = new MarvelService();
+    // const marvelService = new MarvelService();
+    // 
+    const {loading, error, getCharacter, clearError} = useMarvelService();
+
 
     useEffect(() => {
         updateChar();
@@ -217,43 +222,49 @@ const RandomChar = () => {
     const onCharLoaded = (char) => {
         
         setChar(char);
-        setLoading(false);
+        // 
+        // setLoading(false);
         
         // this.setState({char, 
         //     loading: false
         // })
     }
     
-    const onCharLoading = () => {
+    // 
+    // const onCharLoading = () => {
         
-        setLoading(true);
+    //     setLoading(true);
        
-        // this.setState({
-        //     loading : true
-        // })
-    }
+    //     // this.setState({
+    //     //     loading : true
+    //     // })
+    // }
 
-    const onError = () => {
+    // 
+    // const onError = () => {
         
-        setLoading(false);
-        setError(true);
+    //     setLoading(false);
+    //     setError(true);
         
-        // this.setState({
-        //     loading: false,
-        //     error: true
-        // })
-    }
+    //     // this.setState({
+    //     //     loading: false,
+    //     //     error: true
+    //     // })
+    // }
 
     const updateChar = () => {
 
+        // 
+        clearError();
+
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
 
-        onCharLoading();
+        // onCharLoading();
 
-        marvelService
-            .getCharacter(id)
+        getCharacter(id)
             .then(onCharLoaded)
-            .catch(onError)
+            // 
+            // .catch(onError)
     }
 
     // const {name, description, thumbnail, homepage, wiki} = this.state;

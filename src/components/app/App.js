@@ -82,7 +82,7 @@ const App = () => {
                 <div className="char__content">
                     <ErrorBoundary>
                         {/* убираем this. */}
-                        <CharList onCharSelected={onCharSelected}/>
+                    <CharList onCharSelected={onCharSelected}/>
                     </ErrorBoundary>
                     <ErrorBoundary>
                         {/* убираем this.state. */}
