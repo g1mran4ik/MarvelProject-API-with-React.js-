@@ -2,7 +2,7 @@
 // import { /*Component - теперь НЕ НУЖЕН*/ useState/*добавляем хук*/ } from "react";
 
 // добавляем в приложение маршрутизатор
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 // чтобы не указывать конкретный файл в папке, можно использовать такой импорт(для этого создавался файл index.js внутри папки pages)
 import { MainPage, ComicsPage } from '../pages';
@@ -74,15 +74,13 @@ const App = () => {
             <div className="app">
                 <AppHeader/>
                 <main>
-                    {/* Используем switch для возможности переключения между страницами */}
-                    <Switch>   
-                        <Route exact /*данный синтаксис устанавливает ТОЧНОЕ совпадение с указанным путем*/ path="/">
-                            <MainPage/> 
-                        </Route>                     
-                        <Route exact path="/comics">
-                            <ComicsPage/>   
-                        </Route>
-                    </Switch>
+                    {/* Изменяем switch на routes (изменения в версии react-router-dom) */}
+                    <Routes>   
+                        <Route /*синтаксис exact при использовании routes уже не требуется*/ 
+                        path="/"  
+                        /*теперь необходимый элемент вставляется иначе*/ element={<MainPage/>}/>                   
+                        <Route path="/comics" element={<ComicsPage/>} />
+                    </Routes>
                 </main>
             </div>
         </Router>
