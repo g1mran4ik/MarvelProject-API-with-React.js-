@@ -2,4 +2,6 @@
 import MainPage from './MainPage';
 import ComicsPage from './ComicsPage';
 
-export {MainPage, ComicsPage};
+import Page404 from './404';
+
+export {MainPage, ComicsPage, Page404};

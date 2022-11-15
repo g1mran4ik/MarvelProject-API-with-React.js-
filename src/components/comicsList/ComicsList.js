@@ -20,7 +20,7 @@ const ComicsList = () => {
     // используем хук useEffect с аргументами кастомного хука в функции onRequest
     useEffect(() => {
         onRequest(offset, true);
-    }, [])
+    }, []) // eslint-disable-line
 
     // задаем функцию onRequest 
     const onRequest = (offset, initial) => {
@@ -44,7 +44,8 @@ const ComicsList = () => {
     function renderItems (arr) {
         const items = arr.map((item, i) => {
             return (
-                <li className="comics__item" key={i}>
+                <li className="comics__item" key={i}>  
+                {/* eslint-disable-next-line */}
                     <a href="#">
                         <img src={item.thumbnail} alt={item.title} className="comics__item-img"/>
                         <div className="comics__item-name">{item.title}</div>

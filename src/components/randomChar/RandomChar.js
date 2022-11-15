@@ -197,7 +197,7 @@ const RandomChar = () => {
             // останавливаем интервал, когда персонаж обновился
             clearInterval(timerId)
         }
-    }, [])
+    }, []) // eslint-disable-line
     
 
 // ХУКИ ЖИЗНЕННОГО ЦИКЛА

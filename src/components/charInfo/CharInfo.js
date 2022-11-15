@@ -138,7 +138,7 @@ const CharInfo = (props) => {
     // используем хук useEffect
     useEffect(() => {
         updateChar();
-    }, [props.charId])
+    }, [props.charId]) // eslint-disable-line
 
     // заменяем хуком useEffect
     // componentDidMount() {
@@ -243,7 +243,7 @@ const View = ({char}) => {
                     {comics.length > 0 ? null : 'There is no comics with this character'}
                     {
                         comics.map((item,i) => {
-                            if (i > 9) return;
+                            if (i > 9) return <></>;
                             return (
                                 <li key={i} className="char__comics-item">
                                 {item.name}

@@ -1,18 +1,21 @@
 // импортируем компонент реакта (для класса), а также компоненты загрузки, ошибки и загрузки персонажей
-import { /*Component - теперь не понадобится*/ useState, useEffect, useRef } from 'react';
+import {
+  /*Component - теперь не понадобится*/ useState,
+  useEffect,
+  useRef,
+} from "react";
 
 // импортируем компонент PropTypes
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
-import Spinner from '../spinnner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
-// 
-import useMarvelService from '../../services/MarvelService';
+import Spinner from "../spinnner/Spinner";
+import ErrorMessage from "../errorMessage/ErrorMessage";
+//
+import useMarvelService from "../../services/MarvelService";
 
-import './charList.scss';
+import "./charList.scss";
 
 // import abyss from '../../resources/img/abyss.jpg'; - теперь не нужно, картинки будут из списка персонажей
-
 
 // class CharList extends Component {
 
@@ -33,7 +36,7 @@ import './charList.scss';
 //     componentDidMount() {
 //         // // !!! специально вносим ошибку в код для использования предохранителя
 //         // this.foo.bar = 0;
-        
+
 //         // заменяем метод на созданный ниже, вызываем его когда компонент впервые отрендерился
 //         this.onRequest();
 
@@ -111,7 +114,7 @@ import './charList.scss';
 //         this.itemRefs[id].focus();
 //     }
 
-//     // конец куска вставки связанного с фокусом 
+//     // конец куска вставки связанного с фокусом
 
 //     /* Этот метод создан для оптимизации,
 //     чтобы не помещать такую конструкцию в метод render*/
@@ -128,7 +131,7 @@ import './charList.scss';
 //                 // сюда также добавляются строки кода для подсветки выбранного персонажа и возможности переключения персонажей с клавиатуры
 //                 tabIndex={0}
 //                 ref={this.setRef}
-//                 // 
+//                 //
 //                 key={item.id}
 //                 onClick={() => {
 //                     this.props.onCharSelected(item.id);
@@ -172,7 +175,7 @@ import './charList.scss';
 //                 {errorMessage}
 //                 {spinnner}
 //                 {content}
-//                 <button 
+//                 <button
 //                     className="button button__main button__long"
 //                     // дополняем кнопку новыми методами
 //                     disabled={newItemLoading}
@@ -187,232 +190,231 @@ import './charList.scss';
 // }
 
 const CharList = (props) => {
+  // устанавливаем состояния через хук useState
+  const [charList, setCharList] = useState([]);
+  //
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(false);
+  const [newItemLoading, setNewItemLoading] = useState(false);
+  const [offset, setOffset] = useState(210);
+  const [charEnded, setCharEnded] = useState(false);
 
-    // устанавливаем состояния через хук useState
-    const [charList, setCharList] = useState([]);
-    // 
-    // const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState(false);
-    const [newItemLoading, setNewItemLoading] = useState(false);
-    const [offset, setOffset] = useState(210);
-    const [charEnded, setCharEnded] = useState(false);
+  // старая форма для классов не нужна
+  // state = {
+  //     charList: [],
+  //     loading: true,
+  //     error: false,
+  //     newItemLoading: false,
+  //     offset: 210,
+  //     charEnded: false
+  // }
 
-    // старая форма для классов не нужна
-    // state = {
-    //     charList: [],
-    //     loading: true,
-    //     error: false,
+  // задаем экземпляр marvelService через переменную (используя const)
+  // const marvelService = new MarvelService();
+  // после создания кастомного хука заменяем new ... на useMarvelService
+  const { loading, error, getAllCharacters } = useMarvelService();
+
+
+  // добавляем хук useEffect
+  useEffect(() => {
+    // дополняем onRequest аргументами(добавление кастомного хука)
+    onRequest(offset, true);
+  }, []); // eslint-disable-line
+  
+  // p.s. не смотря на то, что хук прописан раньше объявленной стрелочной функции, он запускается только ПОСЛЕ рендеринга
+
+  // теперь не нужно, использовали вместо этого useEffect
+  // componentDidMount() {
+  //     this.onRequest();
+  // }
+
+  // дополняем функцию объявлением const
+  //
+  const onRequest = (
+    offset,
+    /* дополняем аргументом для правильной работы приложения с кастомным хуком*/ initial
+  ) => {
+    // после введения кастомного хука меняем логику отображения спиннера, используя тернарное выражение
+    // добавление такого аргумента позволит нам менять положение статуса загрузки в зависимости от ситуации
+    initial ? setNewItemLoading(false) : setNewItemLoading(true);
+
+    // вытаскиваем смену состояния из удаленной функции onCharListLoading
+    // setNewItemLoading(true);
+    // onCharListLoading после создания кастомного хука НЕ НУЖЕН
+    // this. убираем
+    // onCharListLoading();
+
+    // аналогично убираем this.
+    // marvelService.getAllCharacters(offset)
+    //     .then(onCharListLoaded)
+    //     .catch(onError)
+    // UPD. правки после введения кастомного хука
+    // !!! Преобразуем прежний код из-за новой версии реакта (стрикт мод дважды рендерит стартовый список персонажей)
+    getAllCharacters(offset).then((data) => onCharListLoaded(data, initial));
+    // Строка ниже будет работать в режиме продакшена, но в дев режиме стрикт мод такой запрос будет выводить при первом рендере дважды одинаковый массив (прикол реакта - дабл рендеринг)
+    // getAllCharacters(offset).then(onCharListLoaded);
+  };
+
+  // добавляем const
+  // onCharListLoading НЕ НУЖНО после введения кастомного хука
+  // const onCharListLoading = () => {
+
+  //     // для изменения состояния используем хук
+  //     setNewItemLoading(true);
+
+  //     // прежняя версия уже не нужна
+  //     // this.setState({
+  //     //     newItemLoading: true
+  //     // })
+  // }
+
+  // добавляем const
+  const onCharListLoaded = (newCharList, /* добавляем второй аргумент в связи с тем, 
+  что в новой версии реакта в начале выполняется дабл рендер (устраняем проблему, 
+    при которой список персонажей дважды отображается на странице (одинаковый)) */
+    initial) => {
+
+    let ended = false;
+    if (newCharList.length < 9) {
+      ended = true;
+    }
+
+    // устанавливаем состояния за счет хуков
+    // UPD!!! доб
+    setCharList((charList) => initial ? newCharList : [...charList, ...newCharList]);
+    // setLoading(loading => false); - убираем из-за кастомного хука
+    setNewItemLoading(false);
+    setOffset((offset) => offset + 9);
+    setCharEnded(ended);
+
+    // прежняя версия не нужна
+    // this.setState(({offset, charList}) => ({
+    //     charList: [...charList, ...newCharList],
+    //     loading: false,
     //     newItemLoading: false,
-    //     offset: 210,
-    //     charEnded: false
-    // }
+    //     offset: offset + 9,
+    //     charEnded: ended
+    // }))
+  };
 
-    // задаем экземпляр marvelService через переменную (используя const)
-    // const marvelService = new MarvelService();
-    // после создания кастомного хука заменяем new ... на useMarvelService
-    const {loading, error, getAllCharacters} = useMarvelService();
+  // ТЕПЕРЬ НЕ НУЖНО, т.к. это все есть в кастомном хуке
+  // const onError = () => {
 
-    // добавляем хук useEffect
-    useEffect(() => {
-        // дополняем onRequest аргументами(добавление кастомного хука)
-        onRequest(offset, true);
-    }, [])
-    // p.s. не смотря на то, что хук прописан раньше объявленной стрелочной функции, он запускается только ПОСЛЕ рендеринга
+  //     // задаем новое состояние хуком
+  //     setError(true);
+  //     setLoading(loading => false);
 
-    // теперь не нужно, использовали вместо этого useEffect
-    // componentDidMount() {
-    //     this.onRequest();
-    // }
+  //     // не нужно теперь
+  //     // this.setState({
+  //     //     error: true,
+  //     //     loading: false
+  //     // })
+  // }
 
-    // дополняем функцию объявлением const
-    // 
-    const onRequest = (offset, /* дополняем аргументом для правильной работы приложения с кастомным хуком*/initial) => {
+  // добавляем хук useRef
+  const itemRefs = useRef([]);
+  // прежнюю версию убираем
+  // itemRefs = [];
 
-        // после введения кастомного хука меняем логику отображения спиннера, используя тернарное выражение
-        // добавление такого аргумента позволит нам менять положение статуса загрузки в зависимости от ситуации
-        initial ? setNewItemLoading(false) : setNewItemLoading(true);
-        
-        // вытаскиваем смену состояния из удаленной функции onCharListLoading
-        // setNewItemLoading(true);
-        // onCharListLoading после создания кастомного хука НЕ НУЖЕН
-        // this. убираем
-        // onCharListLoading();
-        
-        // аналогично убираем this.
-        // marvelService.getAllCharacters(offset)
-        //     .then(onCharListLoaded)
-        //     .catch(onError)
-        // UPD. правки после введения кастомного хука
-        getAllCharacters(offset)
-            .then(onCharListLoaded)
+  // убираем, т.к. теперь не нужно
+  // setRef = (ref) => {
+  //     this.itemRefs.push(ref);
+  // }
 
-    }
+  // снова const
+  const focusOnItem = (id) => {
+    // исключаем this. и добавляем везде .current - это ОБЯЗАТЕЛЬНО для хука useRef
+    itemRefs.current.forEach((item) =>
+      item.classList.remove("char__item_selected")
+    );
+    // перемещаем массив в свойство current
+    itemRefs.current[id].classList.add("char__item_selected");
+    itemRefs.current[id].focus();
+  };
 
-    // добавляем const
-    // onCharListLoading НЕ НУЖНО после введения кастомного хука
-    // const onCharListLoading = () => {
+  // делаем функцию
+  function renderItems(arr) {
+    const items = arr.map((item, i) => {
+      let imgStyle = { objectFit: "cover" };
+      if (
+        item.thumbnail ===
+          "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg" ||
+        "http://i.annihil.us/u/prod/marvel/i/mg/f/60/4c002e0305708.gif"
+      ) {
+        imgStyle = { objectFit: "unset" };
+      }
 
-    //     // для изменения состояния используем хук
-    //     setNewItemLoading(true);
-
-    //     // прежняя версия уже не нужна
-    //     // this.setState({
-    //     //     newItemLoading: true
-    //     // })
-    // }
-
-    // добавляем const
-    const onCharListLoaded = (newCharList) => {
-        let ended = false;
-        if (newCharList.length < 9) {
-            ended = true;
-        }
-
-        // устанавливаем состояния за счет хуков
-        setCharList(charList => [...charList, ...newCharList])
-        // setLoading(loading => false); - убираем из-за кастомного хука
-        setNewItemLoading(newItemLoading => false);
-        setOffset(offset => offset + 9);
-        setCharEnded(charEnded => ended);     
-        
-        // прежняя версия не нужна
-        // this.setState(({offset, charList}) => ({
-        //     charList: [...charList, ...newCharList],
-        //     loading: false,
-        //     newItemLoading: false,
-        //     offset: offset + 9,
-        //     charEnded: ended
-        // }))
-    }
-
-
-    // ТЕПЕРЬ НЕ НУЖНО, т.к. это все есть в кастомном хуке
-    // const onError = () => {
-
-    //     // задаем новое состояние хуком
-    //     setError(true);
-    //     setLoading(loading => false);
-
-    //     // не нужно теперь
-    //     // this.setState({
-    //     //     error: true,
-    //     //     loading: false
-    //     // })
-    // }
-
-    // добавляем хук useRef
-    const itemRefs = useRef([]);
-    // прежнюю версию убираем
-    // itemRefs = [];
-
-    // убираем, т.к. теперь не нужно
-    // setRef = (ref) => {
-    //     this.itemRefs.push(ref);
-    // }
-
-    // снова const
-    const focusOnItem = (id) => {
-        // исключаем this. и добавляем везде .current - это ОБЯЗАТЕЛЬНО для хука useRef
-        itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
-        // перемещаем массив в свойство current
-        itemRefs.current[id].classList.add('char__item_selected');
-        itemRefs.current[id].focus();
-    }
-
-    // делаем функцию 
-    function renderItems(arr) {
-        const items = arr.map((item, i) => {
-            let imgStyle = {'objectFit' : 'cover'};
-            if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' || 'http://i.annihil.us/u/prod/marvel/i/mg/f/60/4c002e0305708.gif') {
-                imgStyle = {'objectFit' : 'unset'};
-        }
-
-        return (
-            <li className="char__item"
-                tabIndex={0}
-                // задаем свойства ссылки по новой
-                ref={el => itemRefs.current[i] = el}
-                // убираем прежний
-                // ref={this.setRef}
-                key={item.id}
-                onClick={() => {
-                    // 
-                    props.onCharSelected(item.id);
-                    focusOnItem(i)
-                }}
-                onKeyPress={(e) => {
-                    if (e.key === ' ' || e.key === 'Enter') {
-                        // 
-                        props.onCharSelected(item.id);
-                        focusOnItem(i);
-                    }
-                }}>
-                <img src={item.thumbnail} alt={item.name}
-                style={imgStyle}/>
-                <div className="char__name">{item.name}</div>
-            </li>
-        )
+      return (
+        <li
+          className="char__item"
+          tabIndex={0}
+          // задаем свойства ссылки по новой
+          ref={(el) => (itemRefs.current[i] = el)}
+          // убираем прежний
+          // ref={this.setRef}
+          key={item.id}
+          onClick={() => {
+            //
+            props.onCharSelected(item.id);
+            focusOnItem(i);
+          }}
+          onKeyPress={(e) => {
+            if (e.key === " " || e.key === "Enter") {
+              //
+              props.onCharSelected(item.id);
+              focusOnItem(i);
+            }
+          }}
+        >
+          <img src={item.thumbnail} alt={item.name} style={imgStyle} />
+          <div className="char__name">{item.name}</div>
+        </li>
+      );
     });
 
     // А эта конструкция вынесена для центровки спиннера/ошибки
-        return (
-            <ul className="char__grid">
-                {items}
-            </ul>
-        )
-    }
-        // строка ниже теперь не нужна, теперь эти переменные существуют внутри функции
-        // const {charList, loading, error, /*достаем также новые свойства*/offset, newItemLoading, charEnded} = this.state;
+    return <ul className="char__grid">{items}</ul>;
+  }
+  // строка ниже теперь не нужна, теперь эти переменные существуют внутри функции
+  // const {charList, loading, error, /*достаем также новые свойства*/offset, newItemLoading, charEnded} = this.state;
 
-        // 
-        const items = renderItems(charList);
+  //
+  const items = renderItems(charList);
 
-        const errorMessage = error ? <ErrorMessage/> : null;
-        // дополняем спиннер условием !newItemLoading(добавление кастомного хука)
-        const spinnner = loading && !newItemLoading ? <Spinner/> : null;
-        // const spinnner = loading ? <Spinner/> : null; - после добавления кастомного хука не актуально
-        // const content = !(loading || error) ? items : null;
+  const errorMessage = error ? <ErrorMessage /> : null;
+  // дополняем спиннер условием !newItemLoading(добавление кастомного хука)
+  const spinner = loading && !newItemLoading ? <Spinner /> : null;
+  // const spinnner = loading ? <Spinner/> : null; - после добавления кастомного хука не актуально
+  // const content = !(loading || error) ? items : null;
 
-    return (
-        <div className="char__list">
-            {errorMessage}
-            {spinnner}
-            {/*  */}
-            {items}
-            {/* {content} */}
-            <button 
-                className="button button__main button__long"
-                // дополняем кнопку новыми методами
-                disabled={newItemLoading}
-                // 
-                onClick={() => onRequest(offset)}
-                // добавляем стиль отображения кнопки в случае если персонажи кончились
-                style={{'display' : charEnded ? 'none' : 'block'}}>
-                <div className="inner">load more</div>
-            </button>
-            </div>
-    )
-}
-
+  return (
+    <div className="char__list">
+      {errorMessage}
+      {spinner}
+      {/*  */}
+      {items}
+      {/* {content} */}
+      <button
+        className="button button__main button__long"
+        // дополняем кнопку новыми методами
+        disabled={newItemLoading}
+        //
+        onClick={() => onRequest(offset)}
+        // добавляем стиль отображения кнопки в случае если персонажи кончились
+        style={{ display: charEnded ? "none" : "block" }}
+      >
+        <div className="inner">load more</div>
+      </button>
+    </div>
+  );
+};
 
 CharList.propTypes = {
-    // устанавливаем проверку, что onCharSelected обязательно функция
-    onCharSelected: PropTypes.func.isRequired
-}
+  // устанавливаем проверку, что onCharSelected обязательно функция
+  onCharSelected: PropTypes.func.isRequired,
+};
 
 export default CharList;
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Изначальные данные уже не нужны
 // const CharList = () => {
