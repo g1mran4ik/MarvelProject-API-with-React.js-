@@ -4,6 +4,8 @@ import AppHeader from "../appHeader/AppHeader";
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
+import ComicsList from "../comicsList/ComicsList";
+import AppBanner from "../appBanner/AppBanner";
 
 // импортируем предохранитель
 import ErrorBoundary from '../errorBoundary/ErrorBoundary';
@@ -76,20 +78,22 @@ const App = () => {
         <div className="app">
             <AppHeader/>
             <main>
-                <ErrorBoundary>
+                {/* <ErrorBoundary>
                     <RandomChar/>
-                </ErrorBoundary>
-                <div className="char__content">
-                    <ErrorBoundary>
+                </ErrorBoundary> */}
+                {/* <div className="char__content">
+                    <ErrorBoundary> */}
                         {/* убираем this. */}
-                    <CharList onCharSelected={onCharSelected}/>
+                    {/* <CharList onCharSelected={onCharSelected}/>
                     </ErrorBoundary>
-                    <ErrorBoundary>
+                    <ErrorBoundary> */}
                         {/* убираем this.state. */}
-                        <CharInfo charId={selectedChar}/>
+                        {/* <CharInfo charId={selectedChar}/>
                     </ErrorBoundary>
                 </div>
-                <img className="bg-decoration" src={decoration} alt="vision"/>
+                <img className="bg-decoration" src={decoration} alt="vision"/> */}
+                <AppBanner/>
+                <ComicsList/>
             </main>
         </div>
     )
