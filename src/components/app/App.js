@@ -1,13 +1,20 @@
 // этот импорт переехал в файл главной странички
 // import { /*Component - теперь НЕ НУЖЕН*/ useState/*добавляем хук*/ } from "react";
 
+// импортируем метод ленивой загрузки из реакта (для оптимизации приложения)
+import { lazy, Suspense } from 'react';
+
 // добавляем в приложение маршрутизатор
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 // чтобы не указывать конкретный файл в папке, можно использовать такой импорт(для этого создавался файл index.js внутри папки pages)
-import { MainPage, ComicsPage, Page404, SingleComicPage } from '../pages';
+// при использовании ленивой подгрузки данные импорты обернуты в соответствующий метод lazy ниже!
+// import { MainPage, ComicsPage, SingleComicPage } from '../pages';
+
 
 import AppHeader from "../appHeader/AppHeader";
+
+import Spinner from '../spinnner/Spinner';
 
 // все импорты переехали в файлы страничек (главной и комиксов по принадлежности)
 // import RandomChar from "../randomChar/RandomChar";
@@ -66,6 +73,14 @@ import AppHeader from "../appHeader/AppHeader";
 
 // реализуем компонент через функцию вместо классов
 
+// для использования ленивой подгрузки (подгрузка компонента только при необходимости) достаем страницу ошибки в отдельный импорт(указываем файл)
+const Page404 = lazy(() => import('../pages/404'));
+// переносим статические импорты страничек в динамические с помощью lazy
+const MainPage = lazy(() => import('../pages/MainPage'));
+const ComicsPage = lazy(() => import('../pages/ComicsPage'));
+const SingleComicPage = lazy(() => import('../pages/SingleComicPage'));
+// ВСЕ ДИНАМИЧЕСКИЕ ИМПОРТЫ ДОЛЖНЫ ПОМЕЩАТСЬЯ ПОСЛЕ СТАТИЧЕСКИХ!!! (ВНИЗУ)
+
 const App = () => {
 
     return (
@@ -74,17 +89,19 @@ const App = () => {
             <div className="app">
                 <AppHeader/>
                 <main>
-                    {/* Изменяем switch на routes (изменения в версии react-router-dom) */}
-                    <Routes>   
-                        <Route /*синтаксис exact при использовании routes уже не требуется*/ 
-                        path="/"  
-                        /*теперь необходимый элемент вставляется иначе*/ element={<MainPage/>}/>                   
-                        <Route path="/comics" element={<ComicsPage/>} />
-                        {/*  */}
-                        <Route path="/comics/:comicId" element={<SingleComicPage/>} />
-                        {/*  */}
-                        <Route path="*" element={<Page404/>} />
-                    </Routes>
+                    <Suspense fallback={<Spinner/>}>
+                        {/* Изменяем switch на routes (изменения в версии react-router-dom) */}
+                        <Routes>   
+                            <Route /*синтаксис exact при использовании routes уже не требуется*/ 
+                            path="/"  
+                            /*теперь необходимый элемент вставляется иначе*/ element={<MainPage/>}/>                   
+                            <Route path="/comics" element={<ComicsPage/>} />
+                            {/*  */}
+                            <Route path="/comics/:comicId" element={<SingleComicPage/>} />
+                            {/*  */}
+                            <Route path="*" element={<Page404/>} />
+                        </Routes>
+                    </Suspense>
                 </main>
             </div>
         </Router>
