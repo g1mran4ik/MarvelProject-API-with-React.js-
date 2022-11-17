@@ -13,6 +13,8 @@ import ErrorMessage from "../errorMessage/ErrorMessage";
 //
 import useMarvelService from "../../services/MarvelService";
 
+// импортируем компоненты анимирования для CSS и реакта из react-transition-group
+import {CSSTransition, TransitionGroup} from 'react-transition-group';
 import "./charList.scss";
 
 // import abyss from '../../resources/img/abyss.jpg'; - теперь не нужно, картинки будут из списка персонажей
@@ -345,35 +347,45 @@ const CharList = (props) => {
       }
 
       return (
-        <li
-          className="char__item"
-          tabIndex={0}
-          // задаем свойства ссылки по новой
-          ref={(el) => (itemRefs.current[i] = el)}
-          // убираем прежний
-          // ref={this.setRef}
-          key={item.id}
-          onClick={() => {
-            //
-            props.onCharSelected(item.id);
-            focusOnItem(i);
-          }}
-          onKeyPress={(e) => {
-            if (e.key === " " || e.key === "Enter") {
+        // сюда вставляем строку для использования анимации
+        <CSSTransition key={item.id} timeout={500} classNames="char__item">
+          <li
+            className="char__item"
+            tabIndex={0}
+            // задаем свойства ссылки по новой
+            ref={(el) => (itemRefs.current[i] = el)}
+            // убираем прежний
+            // ref={this.setRef}
+            key={item.id}
+            onClick={() => {
               //
               props.onCharSelected(item.id);
               focusOnItem(i);
-            }
-          }}
-        >
-          <img src={item.thumbnail} alt={item.name} style={imgStyle} />
-          <div className="char__name">{item.name}</div>
-        </li>
+            }}
+            onKeyPress={(e) => {
+              if (e.key === " " || e.key === "Enter") {
+                //
+                props.onCharSelected(item.id);
+                focusOnItem(i);
+              }
+            }}
+          >
+            <img src={item.thumbnail} alt={item.name} style={imgStyle} />
+            <div className="char__name">{item.name}</div>
+          </li>
+        </CSSTransition>
       );
     });
 
     // А эта конструкция вынесена для центровки спиннера/ошибки
-    return <ul className="char__grid">{items}</ul>;
+    return (
+      <ul className="char__grid">
+      {/* оборачиваем наших персонажей в TransitionGroup для анимирования */}
+        <TransitionGroup component={null}>
+          {items}
+        </TransitionGroup>
+      </ul>
+    )
   }
   // строка ниже теперь не нужна, теперь эти переменные существуют внутри функции
   // const {charList, loading, error, /*достаем также новые свойства*/offset, newItemLoading, charEnded} = this.state;
