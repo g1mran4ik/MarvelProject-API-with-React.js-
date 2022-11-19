@@ -78,7 +78,10 @@ const Page404 = lazy(() => import('../pages/404'));
 // переносим статические импорты страничек в динамические с помощью lazy
 const MainPage = lazy(() => import('../pages/MainPage'));
 const ComicsPage = lazy(() => import('../pages/ComicsPage'));
-const SingleComicPage = lazy(() => import('../pages/SingleComicPage'));
+// импорты дополнены вновь созданными страницами отдельного комикса или отдельного персонажа
+const SingleComicLayout = lazy(() => import('../pages/singleComicLayout/SingleComicLayout'));
+const SingleCharacterLayout = lazy(() => import('../pages/singleCharacterLayout/SingleCharacterLayout'));
+const SinglePage = lazy(() => import('../pages/SinglePage'));
 // ВСЕ ДИНАМИЧЕСКИЕ ИМПОРТЫ ДОЛЖНЫ ПОМЕЩАТСЬЯ ПОСЛЕ СТАТИЧЕСКИХ!!! (ВНИЗУ)
 
 const App = () => {
@@ -96,9 +99,14 @@ const App = () => {
                             path="/"  
                             /*теперь необходимый элемент вставляется иначе*/ element={<MainPage/>}/>                   
                             <Route path="/comics" element={<ComicsPage/>} />
-                            {/*  */}
-                            <Route path="/comics/:comicId" element={<SingleComicPage/>} />
-                            {/*  */}
+                            {/* добавляем маршрут отдельной страницей с выводом или страницы комикса или персонажа (зависит компонента и типа даты) */}
+                            <Route path="/comics/:id" element={<SinglePage Component={SingleComicLayout} dataType='comic'/>} />
+                            {/* ранее использовали для маршрута страницы отдельного комикса, но т.к. теперь у нас две похожих страницы
+                            (с персонажем и с комиксом, вытащили страницу SinglePage коротая подстраивается под тип данных (комикс или персонаж)) */}
+                            {/* <Route path="/comics/:comicId" element={<SingleComicPage/>} /> */}
+                            {/* добавляем маршрут отдельной страницей с выводом или страницы комикса или персонажа (зависит компонента и типа даты)  */}
+                            <Route path="/characters/:id" element={<SinglePage Component={SingleCharacterLayout} dataType='character'/>} />
+                            {/* маршрут отображения 404 ошибки в случае неверного адреса или некорректной загрузки данных */}
                             <Route path="*" element={<Page404/>} />
                         </Routes>
                     </Suspense>

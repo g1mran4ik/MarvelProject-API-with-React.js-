@@ -5,6 +5,8 @@ import { useState } from "react";
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
+// 
+import CharSearchForm from "../charSearchForm/CharSearchForm";
 import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 
 // также перемещаем картинку декорацию с главной страницы из app.js
@@ -37,14 +39,19 @@ const MainPage = () => {
                 <RandomChar/>
             </ErrorBoundary>
             <div className="char__content">
-            <ErrorBoundary>
-                {/* убираем this. */}
-            <CharList onCharSelected={onCharSelected}/>
-            </ErrorBoundary>
-            <ErrorBoundary>
-                {/* убираем this.state. */}
-                <CharInfo charId={selectedChar}/>
-            </ErrorBoundary>
+                <ErrorBoundary>
+                    {/* убираем this. */}
+                    <CharList onCharSelected={onCharSelected}/>
+                </ErrorBoundary>
+                <div>
+                    <ErrorBoundary>
+                        {/* убираем this.state. */}
+                        <CharInfo charId={selectedChar}/>
+                    </ErrorBoundary>
+                    <ErrorBoundary>
+                        <CharSearchForm/>
+                    </ErrorBoundary>
+                </div>
             </div>
             <img className="bg-decoration" src={decoration} alt="vision"/>
         </>
