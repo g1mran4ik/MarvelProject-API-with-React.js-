@@ -7,6 +7,26 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 // стиль нам нужен, так что его оставляем
 import './comicsList.scss';
 
+// 
+const setContent = (process, Component, newItemLoading) => {
+    switch (process) {
+        case 'waiting':
+            return <Spinner/>;
+            break;
+        case 'loading':
+            return newItemLoading ? <Component/> : <Spinner/>;
+            break;
+        case 'confirmed':
+            return <Component/>;
+            break;
+        case 'error':
+            return <ErrorMessage/>;
+            break;
+        default:
+            throw new Error('Unexpected process state');
+    }
+  }
+
 const ComicsList = () => {
 
     // задаем переменные состояний
@@ -16,7 +36,7 @@ const ComicsList = () => {
     const [comicsEnded, setComicsEnded] = useState(false);
 
     // достаем нужные переменные из созданного хука
-    const {loading, error, getAllComics} = useMarvelService();
+    const {loading, error, getAllComics, process, setProcess} = useMarvelService();
 
     // используем хук useEffect с аргументами кастомного хука в функции onRequest
     useEffect(() => {
@@ -28,6 +48,7 @@ const ComicsList = () => {
         initial ? setnewItemLoading(false) : setnewItemLoading(true);
         getAllComics(offset)
             .then(onComicsListLoaded)
+            .then(() => setProcess('confirmed'))
     }
 
     // задаем функцию onComicsListLoaded (по аналогии c CharList)
@@ -64,17 +85,21 @@ const ComicsList = () => {
     }
 
     // 
-    const items = renderItems(comicsList);
-
     // 
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinnner = loading && !newItemLoading ? <Spinner/> : null;
+    // const items = renderItems(comicsList);
+
+    //
+    //  
+    // const errorMessage = error ? <ErrorMessage/> : null;
+    // const spinnner = loading && !newItemLoading ? <Spinner/> : null;
 
     return (
         <div className="comics__list">
-            {errorMessage}
+            {/*  */}
+            {setContent(process, () => renderItems(comicsList), newItemLoading)}
+            {/* {errorMessage}
             {spinnner}
-            {items}
+            {items} */}
             <button 
                 disabled={newItemLoading}
                 style={{'display' : comicsEnded ? 'none' : 'block'}}

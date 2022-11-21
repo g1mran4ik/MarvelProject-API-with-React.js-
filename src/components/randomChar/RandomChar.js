@@ -1,11 +1,16 @@
 // импортируем компонент из реакта
 import { /*Component*/useEffect, useState } from 'react';
 // импортируем спиннер для отображения загрузки
-import Spinner from '../spinnner/Spinner';
-// импортируем компонент сообщения об ошибке 
-import ErrorMessage from '../errorMessage/ErrorMessage';
-// импортируем сервис загрузки данных (урок 2)
 // 
+// import Spinner from '../spinnner/Spinner';
+// импортируем компонент сообщения об ошибке 
+// 
+// import ErrorMessage from '../errorMessage/ErrorMessage';
+
+// 
+import setContent from '../../utils/setContent';
+
+// импортируем сервис загрузки данных (урок 2)
 import useMarvelService from '../../services/MarvelService';
 
 import './randomChar.scss';
@@ -185,7 +190,7 @@ const RandomChar = () => {
     // добавляем const
     // const marvelService = new MarvelService();
     // 
-    const {loading, error, getCharacter, clearError} = useMarvelService();
+    const {loading, error, getCharacter, clearError, process, setProcess} = useMarvelService();
 
 
     useEffect(() => {
@@ -265,20 +270,24 @@ const RandomChar = () => {
             .then(onCharLoaded)
             // 
             // .catch(onError)
+            .then(() => setProcess('confirmed'))
     }
 
     // const {name, description, thumbnail, homepage, wiki} = this.state;
     
     // const {char, loading, error} = this.state;
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinnner = loading ? <Spinner/> : null;
-    const content = !(loading || error) ? <View char={char}/> : null;
+    // 
+    // const errorMessage = error ? <ErrorMessage/> : null;
+    // const spinnner = loading ? <Spinner/> : null;
+    // const content = !(loading || error) ? <View char={char}/> : null;
 
     return (
         <div className="randomchar">
-            {errorMessage}
+            {/*  */}
+            {setContent(process, View, char)}
+            {/* {errorMessage}
             {spinnner}
-            {content}
+            {content} */}
             <div className="randomchar__static">
                 <p className="randomchar__title">
                     Random character for today!<br/>
@@ -296,8 +305,8 @@ const RandomChar = () => {
     )
 }
 
-const View = ({char}) => {
-    const {name, description, thumbnail, homepage, wiki} = char;
+const View = ({data}) => {
+    const {name, description, thumbnail, homepage, wiki} = data;
     let imgStyle = {'objectFit' : 'cover'};
     if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
         imgStyle = {'objectFit' : 'contain'};

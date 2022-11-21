@@ -5,8 +5,13 @@ import { useParams, /*Link - компонент переехал в отдель
 import { useState, useEffect } from 'react';
 
 // импортируем спиннер и ошибку (компоненты)
-import Spinner from '../spinnner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+// 
+// import Spinner from '../spinnner/Spinner';
+// import ErrorMessage from '../errorMessage/ErrorMessage';
+
+// 
+import setContent from '../../utils/setContent';
+
 // импортируем баннер который будет висеть над информацией о персонаже или комиксе
 import AppBanner from '../appBanner/AppBanner';
 // импортируем наш сервис (кастомный хук)
@@ -20,7 +25,7 @@ const SinglePage = ({Component, dataType}) => {
 
     const {id} = useParams();
     const [data, setData] = useState(null);
-    const {loading, error, getComic, getCharacter, clearError} = useMarvelService();
+    const {loading, error, getComic, getCharacter, clearError, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         updateData()
@@ -32,10 +37,14 @@ const SinglePage = ({Component, dataType}) => {
         // добавляем свитч-кейс, в котором в ЗАВИСИМОСТИ от типа данных будет прогружаться или инфо персонажа или инфо комикса
         switch (dataType) {
             case 'comic':
-                getComic(id).then(onDataLoaded);
+                getComic(id).then(onDataLoaded)
+                // 
+                .then(() => setProcess('confirmed'));
                 break;
             case 'character':
-                getCharacter(id).then(onDataLoaded);
+                getCharacter(id).then(onDataLoaded)
+                // 
+                .then(() => setProcess('confirmed'));
         }
     }
 
@@ -44,16 +53,19 @@ const SinglePage = ({Component, dataType}) => {
     }
 
     // 
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinnner = loading ? <Spinner/> : null;
-    const content = !(loading || error || !data) ? <Component data={data}/> : null;
+    // const errorMessage = error ? <ErrorMessage/> : null;
+    // const spinnner = loading ? <Spinner/> : null;
+    // const content = !(loading || error || !data) ? <Component data={data}/> : null;
 
     return (
         <>
             <AppBanner/>
-            {errorMessage}
+            {/*  */}
+            {setContent(process, Component, data)}
+            {/*  */}
+            {/* {errorMessage}
             {spinnner}
-            {content}
+            {content} */}
         </>
     )
 }

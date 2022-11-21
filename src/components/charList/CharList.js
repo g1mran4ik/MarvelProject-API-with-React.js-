@@ -8,10 +8,15 @@ import {
 // импортируем компонент PropTypes
 import PropTypes from "prop-types";
 
+// 
 import Spinner from "../spinnner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 //
 import useMarvelService from "../../services/MarvelService";
+
+// импортируем созданную в отдельном файле функцию setContent
+// UPD. т.к. мы внутри данного файла прописали вручную такую функцию, её импорт не нужен
+// import setContent from "../../utils/setContent";
 
 // импортируем компоненты анимирования для CSS и реакта из react-transition-group
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
@@ -191,6 +196,26 @@ import "./charList.scss";
 //     }
 // }
 
+// 
+const setContent = (process, Component, newItemLoading) => {
+  switch (process) {
+      case 'waiting':
+          return <Spinner/>;
+          break;
+      case 'loading':
+          return newItemLoading ? <Component/> : <Spinner/>;
+          break;
+      case 'confirmed':
+          return <Component/>;
+          break;
+      case 'error':
+          return <ErrorMessage/>;
+          break;
+      default:
+          throw new Error('Unexpected process state');
+  }
+}
+
 const CharList = (props) => {
   // устанавливаем состояния через хук useState
   const [charList, setCharList] = useState([]);
@@ -214,7 +239,7 @@ const CharList = (props) => {
   // задаем экземпляр marvelService через переменную (используя const)
   // const marvelService = new MarvelService();
   // после создания кастомного хука заменяем new ... на useMarvelService
-  const { loading, error, getAllCharacters } = useMarvelService();
+  const { loading, error, getAllCharacters, process, setProcess } = useMarvelService();
 
 
   // добавляем хук useEffect
@@ -252,9 +277,11 @@ const CharList = (props) => {
     //     .catch(onError)
     // UPD. правки после введения кастомного хука
     // !!! Преобразуем прежний код из-за новой версии реакта (стрикт мод дважды рендерит стартовый список персонажей)
-    getAllCharacters(offset).then((data) => onCharListLoaded(data, initial));
+    getAllCharacters(offset).then((data) => onCharListLoaded(data, initial))
     // Строка ниже будет работать в режиме продакшена, но в дев режиме стрикт мод такой запрос будет выводить при первом рендере дважды одинаковый массив (прикол реакта - дабл рендеринг)
     // getAllCharacters(offset).then(onCharListLoaded);
+    // 
+    .then(() => setProcess('confirmed'));
   };
 
   // добавляем const
@@ -391,20 +418,26 @@ const CharList = (props) => {
   // const {charList, loading, error, /*достаем также новые свойства*/offset, newItemLoading, charEnded} = this.state;
 
   //
-  const items = renderItems(charList);
+  // 
+  // const items = renderItems(charList);
 
-  const errorMessage = error ? <ErrorMessage /> : null;
+  // 
+  // const errorMessage = error ? <ErrorMessage /> : null;
   // дополняем спиннер условием !newItemLoading(добавление кастомного хука)
-  const spinner = loading && !newItemLoading ? <Spinner /> : null;
+  // 
+  // const spinner = loading && !newItemLoading ? <Spinner /> : null;
   // const spinnner = loading ? <Spinner/> : null; - после добавления кастомного хука не актуально
   // const content = !(loading || error) ? items : null;
 
   return (
     <div className="char__list">
-      {errorMessage}
-      {spinner}
       {/*  */}
-      {items}
+      {setContent(process, () => renderItems(charList), newItemLoading)}
+      {/*  */}
+      {/* {errorMessage}
+      {spinner} */}
+      {/*  */}
+      {/* {items} */}
       {/* {content} */}
       <button
         className="button button__main button__long"
