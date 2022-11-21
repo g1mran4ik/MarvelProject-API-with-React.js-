@@ -25,7 +25,7 @@ const SinglePage = ({Component, dataType}) => {
 
     const {id} = useParams();
     const [data, setData] = useState(null);
-    const {loading, error, getComic, getCharacter, clearError, process, setProcess} = useMarvelService();
+    const {/*loading, error,*/ getComic, getCharacter, clearError, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         updateData()

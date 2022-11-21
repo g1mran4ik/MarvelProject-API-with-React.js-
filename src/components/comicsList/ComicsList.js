@@ -12,16 +12,16 @@ const setContent = (process, Component, newItemLoading) => {
     switch (process) {
         case 'waiting':
             return <Spinner/>;
-            break;
+            // break;
         case 'loading':
             return newItemLoading ? <Component/> : <Spinner/>;
-            break;
+            // break;
         case 'confirmed':
             return <Component/>;
-            break;
+            // break;
         case 'error':
             return <ErrorMessage/>;
-            break;
+            // break;
         default:
             throw new Error('Unexpected process state');
     }
@@ -36,7 +36,7 @@ const ComicsList = () => {
     const [comicsEnded, setComicsEnded] = useState(false);
 
     // достаем нужные переменные из созданного хука
-    const {loading, error, getAllComics, process, setProcess} = useMarvelService();
+    const {/*loading, error,*/ getAllComics, process, setProcess} = useMarvelService();
 
     // используем хук useEffect с аргументами кастомного хука в функции onRequest
     useEffect(() => {

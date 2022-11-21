@@ -190,7 +190,7 @@ const RandomChar = () => {
     // добавляем const
     // const marvelService = new MarvelService();
     // 
-    const {loading, error, getCharacter, clearError, process, setProcess} = useMarvelService();
+    const {/*loading, error,*/ getCharacter, clearError, process, setProcess} = useMarvelService();
 
 
     useEffect(() => {

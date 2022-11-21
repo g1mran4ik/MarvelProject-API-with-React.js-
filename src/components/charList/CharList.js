@@ -201,16 +201,16 @@ const setContent = (process, Component, newItemLoading) => {
   switch (process) {
       case 'waiting':
           return <Spinner/>;
-          break;
+          // break;
       case 'loading':
           return newItemLoading ? <Component/> : <Spinner/>;
-          break;
+          // break;
       case 'confirmed':
           return <Component/>;
-          break;
+          // break;
       case 'error':
           return <ErrorMessage/>;
-          break;
+          // break;
       default:
           throw new Error('Unexpected process state');
   }
@@ -239,7 +239,7 @@ const CharList = (props) => {
   // задаем экземпляр marvelService через переменную (используя const)
   // const marvelService = new MarvelService();
   // после создания кастомного хука заменяем new ... на useMarvelService
-  const { loading, error, getAllCharacters, process, setProcess } = useMarvelService();
+  const { /*loading, error,*/ getAllCharacters, process, setProcess } = useMarvelService();
 
 
   // добавляем хук useEffect

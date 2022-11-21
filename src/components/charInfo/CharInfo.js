@@ -136,7 +136,7 @@ const CharInfo = (props) => {
     // дополняем экземпляр переменной
     // const marvelService = new MarvelService();
     // 
-    const {loading, error, getCharacter, clearError, process, setProcess} = useMarvelService();
+    const {/*loading, error,*/ getCharacter, clearError, process, setProcess} = useMarvelService();
 
 
     // используем хук useEffect
