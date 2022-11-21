@@ -3,6 +3,7 @@ import {
   /*Component - теперь не понадобится*/ useState,
   useEffect,
   useRef,
+  useMemo
 } from "react";
 
 // импортируем компонент PropTypes
@@ -362,7 +363,7 @@ const CharList = (props) => {
   };
 
   // делаем функцию
-  function renderItems(arr) {
+  const renderItems = arr => {
     const items = arr.map((item, i) => {
       let imgStyle = { objectFit: "cover" };
       if (
@@ -429,10 +430,18 @@ const CharList = (props) => {
   // const spinnner = loading ? <Spinner/> : null; - после добавления кастомного хука не актуально
   // const content = !(loading || error) ? items : null;
 
+  const elements = useMemo(() => {
+    return setContent(process, () => renderItems(charList),
+     newItemLoading);
+    // eslint-disable-next-line
+  }, [process]); 
+
   return (
     <div className="char__list">
       {/*  */}
-      {setContent(process, () => renderItems(charList), newItemLoading)}
+      {/* {setContent(process, () => renderItems(charList), newItemLoading)} */}
+      {/*  */}
+      {elements}
       {/*  */}
       {/* {errorMessage}
       {spinner} */}
